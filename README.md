@@ -67,6 +67,11 @@ python manage.py init
 
 ### 5. Run the Application
 
+**Demo Version (No API keys required):**
+```bash
+streamlit run app_offline.py
+```
+
 **Web Interface:**
 ```bash
 python manage.py web
