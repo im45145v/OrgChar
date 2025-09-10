@@ -86,6 +86,32 @@ python manage.py discord
 python bot.py
 ```
 
+### 6. Docker Deployment (Recommended for Production)
+
+OrgChar can be easily deployed using Docker:
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# Run only the web interface
+docker-compose up -d orgchar-web
+
+# Run only the Discord bot
+docker-compose up -d orgchar-discord
+
+# Run the offline demo version (no OpenAI API required)
+docker-compose up -d orgchar-offline
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+For custom configurations, edit the `.env` file before building the Docker containers.
+
 ## Usage Guide 📖
 
 ### Web Interface
@@ -101,7 +127,7 @@ python bot.py
 - `@OrgChar <question>` - Ask a question by mentioning the bot
 - `!org ask <question>` - Ask a specific question
 - `!org stats` - View knowledge base statistics  
-- `!org help` - Show help information
+- `!org orghelp` - Show help information
 - `!org refresh` - Refresh knowledge base (Admin only)
 
 **Example Questions:**
@@ -243,12 +269,24 @@ OrgChar/
    - Ensure documents are in supported formats (PDF, TXT, MD)
    - Check file permissions and encoding
 
+5. **Docker-related Issues**
+   - **Container not starting**: Check logs with `docker-compose logs -f`
+   - **Permission issues**: Make sure volumes have correct permissions
+   - **Port conflicts**: Change port mappings in docker-compose.yml
+   - **API keys not working**: Verify .env file is properly mounted
+   - **Knowledge base empty**: Initialize manually with `docker-compose exec orgchar-web python manage.py init`
+
 ### Logs and Debugging
 
 Enable debug logging:
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
+```
+
+When using Docker, view logs with:
+```bash
+docker-compose logs -f [service-name]
 ```
 
 ## Contributing 🤝

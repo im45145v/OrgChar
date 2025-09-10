@@ -74,7 +74,7 @@ class OrgCharBot(commands.Bot):
         # Set status
         activity = discord.Activity(
             type=discord.ActivityType.listening,
-            name="organizational behavior questions | !org help"
+            name="organizational behavior questions | !org orghelp"
         )
         await self.change_presence(activity=activity)
     
@@ -100,7 +100,7 @@ class OrgCharBot(commands.Bot):
             await message.reply(
                 "Hi! I'm OrgChar, your organizational behavior assistant. "
                 "Ask me questions about leadership, workplace dynamics, management, and more!\n"
-                "Use `!org help` to see available commands."
+                "Use `!org orghelp` to see available commands."
             )
             return
         
@@ -240,12 +240,12 @@ async def refresh_knowledge_base(ctx):
             logger.error(f"Error refreshing knowledge base: {e}")
             await ctx.reply(f"❌ Error refreshing knowledge base: {str(e)}")
 
-@commands.command(name='help', aliases=['commands', 'usage'])
+@commands.command(name='orghelp', aliases=['commands', 'usage'])
 async def bot_help(ctx):
     """
     Show help information.
     
-    Usage: !org help
+    Usage: !org orghelp
     """
     embed = discord.Embed(
         title="🏢 OrgChar Bot Help",
@@ -264,7 +264,7 @@ async def bot_help(ctx):
         value=(
             "`!org ask <question>` - Ask a specific question\n"
             "`!org stats` - View knowledge base statistics\n"
-            "`!org help` - Show this help message\n"
+            "`!org orghelp` - Show this help message\n"
             "`!org refresh` - Refresh knowledge base (Admin only)"
         ),
         inline=False

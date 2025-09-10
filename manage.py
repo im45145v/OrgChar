@@ -75,9 +75,17 @@ def run_streamlit(args):
     config.ensure_directories()
     
     import subprocess
+    import shutil
     
     app_path = Path(__file__).parent / "app.py"
-    cmd = ["streamlit", "run", str(app_path)]
+    
+    # Try to find streamlit in PATH or use the full path
+    streamlit_path = shutil.which("streamlit")
+    if not streamlit_path:
+        # Use the Python module directly if executable not found
+        cmd = ["python", "-m", "streamlit", "run", str(app_path)]
+    else:
+        cmd = [streamlit_path, "run", str(app_path)]
     
     if args.port:
         cmd.extend(["--server.port", str(args.port)])

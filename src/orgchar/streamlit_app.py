@@ -106,7 +106,8 @@ class StreamlitApp:
     
     def _refresh_knowledge_base(self):
         """Refresh the knowledge base from documents."""
-        with st.sidebar.spinner("Refreshing knowledge base..."):
+        with st.spinner("Refreshing knowledge base..."):
+            st.sidebar.text("Refreshing knowledge base...")
             success = st.session_state.rag_system.update_knowledge_base()
             if success:
                 st.sidebar.success("Knowledge base refreshed!")
@@ -129,7 +130,8 @@ class StreamlitApp:
             
             all_documents = []
             
-            with st.sidebar.spinner(f"Processing {len(uploaded_files)} files..."):
+            with st.spinner(f"Processing {len(uploaded_files)} files..."):
+                st.sidebar.text(f"Processing {len(uploaded_files)} files...")
                 for uploaded_file in uploaded_files:
                     # Save uploaded file temporarily
                     temp_path = Path("/tmp") / uploaded_file.name

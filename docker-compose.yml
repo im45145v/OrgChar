@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  orgchar-web:
+    build: .
+    container_name: orgchar-web
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./knowledge_base:/app/knowledge_base
+      - ./vector_db:/app/vector_db
+      - ./.env:/app/.env
+    command: web
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  orgchar-discord:
+    build: .
+    container_name: orgchar-discord
+    volumes:
+      - ./knowledge_base:/app/knowledge_base
+      - ./vector_db:/app/vector_db
+      - ./.env:/app/.env
+    command: discord
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # Uncomment to run the offline demo version (no OpenAI API required)
+  #orgchar-offline:
+  #  build: .
+  #  container_name: orgchar-offline
+  #  ports:
+  #    - "8502:8501"
+  #  volumes:
+  #    - ./knowledge_base:/app/knowledge_base
+  #  command: offline
+  #  restart: unless-stopped
