@@ -1,6 +1,6 @@
 services:
   orgchar-web:
-    image: orgchar-web:latest
+    image: orgchar-web
     container_name: orgchar-web
     ports:
       - "8501:8501"
@@ -15,7 +15,7 @@ services:
     network_mode: "host"
 
   orgchar-discord:
-    image: orgchar-discord:latest
+    image: orgchar-discord
     container_name: orgchar-discord
     volumes:
       - ./knowledge_base:/app/knowledge_base
