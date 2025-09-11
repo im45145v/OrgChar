@@ -12,7 +12,6 @@ services:
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
-    network_mode: "host"
 
   orgchar-discord:
     build: .
@@ -25,7 +24,6 @@ services:
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
-    network_mode: "host"
 
   # Uncomment to run the offline demo version (no OpenAI API required)
   #orgchar-offline:
