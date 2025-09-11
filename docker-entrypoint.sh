@@ -12,7 +12,7 @@ case "$1" in
   web)
     init_knowledge_base
     echo "Starting web interface..."
-    exec streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+    exec python manage.py web
     ;;
   discord)
     init_knowledge_base
@@ -21,7 +21,7 @@ case "$1" in
     ;;
   offline)
     echo "Starting offline demo mode..."
-    exec streamlit run app_offline.py --server.port=8501 --server.address=0.0.0.0
+    exec python manage.py offline
     ;;
   init)
     init_knowledge_base
