@@ -1,6 +1,6 @@
 services:
   orgchar-web:
-    build: .
+    image: orgchar-web:latest
     container_name: orgchar-web
     ports:
       - "8501:8501"
@@ -15,7 +15,7 @@ services:
     network_mode: "host"
 
   orgchar-discord:
-    build: .
+    image: orgchar-discord:latest
     container_name: orgchar-discord
     volumes:
       - ./knowledge_base:/app/knowledge_base
@@ -29,7 +29,7 @@ services:
 
   # Uncomment to run the offline demo version (no OpenAI API required)
   #orgchar-offline:
-  #  build: .
+  #  image: orgchar-web:latest
   #  container_name: orgchar-offline
   #  ports:
   #    - "8502:8501"
@@ -37,3 +37,4 @@ services:
   #    - ./knowledge_base:/app/knowledge_base
   #  command: offline
   #  restart: unless-stopped
+  #  network_mode: "host"
