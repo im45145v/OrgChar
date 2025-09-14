@@ -2,7 +2,7 @@
 
 A powerful Python-based RAG (Retrieval-Augmented Generation) chatbot system designed specifically for answering questions about organizational behavior, leadership, workplace dynamics, and management principles. The system uses local document knowledge bases and provides both web and Discord interfaces for easy access.
 
-[![Watch Demo](https://cdn.loom.com/sessions/thumbnails/c860c2b79a1146fc8d16cc0f443b1ea1-00001.jpg)](https://www.loom.com/share/c860c2b79a1146fc8d16cc0f443b1ea1?sid=0aff9064-eccd-491f-a852-270dc62e24c1)
+[!Watch Demo](https://cdn.loom.com/sessions/thumbnails/c860c2b79a1146fc8d16cc0f443b1ea1-00001.jpg)](https://www.loom.com/share/c860c2b79a1146fc8d16cc0f443b1ea1?sid=0aff9064-eccd-491f-a852-270dc62e24c1)
 
 ## Features ✨
 
