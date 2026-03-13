@@ -5,10 +5,12 @@ RAG (Retrieval-Augmented Generation) system for organizational behavior Q&A.
 import logging
 from typing import List, Optional, Dict, Any
 from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import Document
+# LangChain core prompt & schema classes moved to langchain_core
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.schema import Document
 from .vector_store import VectorStore
 from .config import Config
+
 
 logger = logging.getLogger(__name__)
 
