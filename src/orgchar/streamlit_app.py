@@ -146,7 +146,7 @@ class StreamlitApp:
                             content = processor.load_text_file(temp_path)
                         
                         # Create document
-                        from langchain.schema import Document
+                        from langchain_core.documents import Document
                         doc = Document(
                             page_content=content,
                             metadata={
