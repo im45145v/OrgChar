@@ -61,6 +61,50 @@ LOCAL_LLM_MODEL=google/flan-t5-base
 LOCAL_MAX_NEW_TOKENS=512
 ```
 
+### Streamlit Cloud Secrets (TOML)
+
+For Streamlit Cloud deployments, set secrets in the app settings using TOML.
+The app supports both flat keys and a namespaced `[orgchar]` section.
+
+Flat format:
+
+```toml
+OPENAI_API_KEY = "your_openai_key"
+DISCORD_BOT_TOKEN = "your_discord_token"
+DISCORD_GUILD_ID = "your_guild_id"
+
+KNOWLEDGE_BASE_PATH = "./knowledge_base"
+VECTOR_DB_PATH = "./vector_db"
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
+
+LLM_MODEL = "gpt-4o-mini"
+TEMPERATURE = 0.3
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+USE_LOCAL_FALLBACK = true
+LOCAL_LLM_MODEL = "google/flan-t5-base"
+LOCAL_MAX_NEW_TOKENS = 512
+```
+
+Namespaced format:
+
+```toml
+[orgchar]
+OPENAI_API_KEY = "your_openai_key"
+DISCORD_BOT_TOKEN = "your_discord_token"
+DISCORD_GUILD_ID = "your_guild_id"
+KNOWLEDGE_BASE_PATH = "./knowledge_base"
+VECTOR_DB_PATH = "./vector_db"
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
+LLM_MODEL = "gpt-4o-mini"
+TEMPERATURE = 0.3
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+USE_LOCAL_FALLBACK = true
+LOCAL_LLM_MODEL = "google/flan-t5-base"
+LOCAL_MAX_NEW_TOKENS = 512
+```
+
 ### 3. Add Documents
 
 Place your organizational behavior documents (PDF, TXT, MD) in the `knowledge_base` directory:

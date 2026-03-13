@@ -95,6 +95,27 @@ LOCAL_LLM_MODEL=google/flan-t5-base
 LOCAL_MAX_NEW_TOKENS=512
 ```
 
+#### Configure Streamlit Cloud Secrets (Alternative)
+
+If deploying on Streamlit Cloud, add secrets in TOML format from the app settings.
+This project supports either flat keys or an `[orgchar]` section.
+
+```toml
+OPENAI_API_KEY = "your_openai_key"
+DISCORD_BOT_TOKEN = "your_discord_token"
+DISCORD_GUILD_ID = "your_guild_id"
+KNOWLEDGE_BASE_PATH = "./knowledge_base"
+VECTOR_DB_PATH = "./vector_db"
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
+LLM_MODEL = "gpt-4o-mini"
+TEMPERATURE = 0.3
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+USE_LOCAL_FALLBACK = true
+LOCAL_LLM_MODEL = "google/flan-t5-base"
+LOCAL_MAX_NEW_TOKENS = 512
+```
+
 ### 4. Directory Structure Setup
 
 ```bash
