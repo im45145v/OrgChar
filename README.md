@@ -49,6 +49,16 @@ KNOWLEDGE_BASE_PATH=./knowledge_base
 VECTOR_DB_PATH=./vector_db
 CHUNK_SIZE=1000
 CHUNK_OVERLAP=200
+
+# Model Configuration
+LLM_MODEL=gpt-4o-mini
+TEMPERATURE=0.3
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# Local fallback (recommended)
+USE_LOCAL_FALLBACK=true
+LOCAL_LLM_MODEL=google/flan-t5-base
+LOCAL_MAX_NEW_TOKENS=512
 ```
 
 ### 3. Add Documents
@@ -213,8 +223,9 @@ Documents → Document Processor → Vector Store → RAG System → User Interf
 
 The system uses:
 - **Embeddings**: `sentence-transformers/all-MiniLM-L6-v2`
-- **LLM**: `gpt-3.5-turbo` (configurable)
+- **LLM**: `gpt-4o-mini` (configurable)
 - **Vector Store**: FAISS with cosine similarity
+- **Fallback LLM**: `google/flan-t5-base` via Hugging Face pipeline
 
 ## Development 🛠️
 

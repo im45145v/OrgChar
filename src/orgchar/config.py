@@ -26,9 +26,12 @@ class Config:
     CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
     
     # Model configuration
-    EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-    LLM_MODEL = "gpt-3.5-turbo"
-    TEMPERATURE = 0.7
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
+    TEMPERATURE = float(os.getenv("TEMPERATURE", "0.3"))
+    USE_LOCAL_FALLBACK = os.getenv("USE_LOCAL_FALLBACK", "true").lower() in {"1", "true", "yes", "on"}
+    LOCAL_LLM_MODEL = os.getenv("LOCAL_LLM_MODEL", "google/flan-t5-base")
+    LOCAL_MAX_NEW_TOKENS = int(os.getenv("LOCAL_MAX_NEW_TOKENS", "512"))
     
     # Streamlit configuration
     STREAMLIT_PAGE_TITLE = "OrgChar - Organizational Behavior Chatbot"

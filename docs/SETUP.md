@@ -83,6 +83,16 @@ KNOWLEDGE_BASE_PATH=./knowledge_base
 VECTOR_DB_PATH=./vector_db
 CHUNK_SIZE=1000
 CHUNK_OVERLAP=200
+
+# Model Settings
+LLM_MODEL=gpt-4o-mini
+TEMPERATURE=0.3
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# Local fallback settings
+USE_LOCAL_FALLBACK=true
+LOCAL_LLM_MODEL=google/flan-t5-base
+LOCAL_MAX_NEW_TOKENS=512
 ```
 
 ### 4. Directory Structure Setup
@@ -242,8 +252,8 @@ class Config:
     EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2"
     
     # Use different LLM
-    LLM_MODEL = "gpt-4"  # More accurate but slower
-    # LLM_MODEL = "gpt-3.5-turbo"  # Faster and cheaper
+    LLM_MODEL = "gpt-4o"  # More accurate but slower
+    # LLM_MODEL = "gpt-4o-mini"  # Faster and cheaper
 ```
 
 ### Memory Optimization

@@ -3,12 +3,13 @@ RAG (Retrieval-Augmented Generation) system for organizational behavior Q&A.
 """
 
 import logging
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from .vector_store import VectorStore
 from .config import Config
+from .local_llm import LocalLLMAdapter
 
 
 logger = logging.getLogger(__name__)
@@ -24,14 +25,31 @@ class RAGSystem:
             config: Configuration object
         """
         self.config = config or Config()
+        self.backend = "uninitialized"
         
         # Initialize components
         self.vector_store = VectorStore(embedding_model=self.config.EMBEDDING_MODEL)
-        self.llm = ChatOpenAI(
-            model=self.config.LLM_MODEL,
-            temperature=self.config.TEMPERATURE,
-            openai_api_key=self.config.OPENAI_API_KEY
-        ) if self.config.OPENAI_API_KEY else None
+        self.llm: Optional[ChatOpenAI] = None
+        self.local_llm: Optional[LocalLLMAdapter] = None
+
+        if self.config.OPENAI_API_KEY:
+            self.llm = ChatOpenAI(
+                model=self.config.LLM_MODEL,
+                temperature=self.config.TEMPERATURE,
+                api_key=self.config.OPENAI_API_KEY
+            )
+            self.backend = "openai"
+        elif self.config.USE_LOCAL_FALLBACK:
+            self.local_llm = LocalLLMAdapter(
+                model_name=self.config.LOCAL_LLM_MODEL,
+                max_new_tokens=self.config.LOCAL_MAX_NEW_TOKENS,
+            )
+            if self.local_llm.is_available:
+                self.backend = "local"
+            else:
+                self.backend = "unavailable"
+        else:
+            self.backend = "unavailable"
         
         # Create prompt template
         self.prompt_template = ChatPromptTemplate.from_template(
@@ -155,8 +173,11 @@ Answer:"""
         Returns:
             Generated answer
         """
-        if not self.llm:
-            return "Error: OpenAI API key not configured. Please set OPENAI_API_KEY in your environment."
+        if not self.llm and not (self.local_llm and self.local_llm.is_available):
+            return (
+                "Error: No language model backend is available. "
+                "Configure OPENAI_API_KEY or enable local fallback with USE_LOCAL_FALLBACK=true."
+            )
         
         try:
             # Prepare context
@@ -164,15 +185,19 @@ Answer:"""
                 f"Source: {doc.metadata.get('filename', 'Unknown')}\n{doc.page_content}"
                 for doc in context_docs
             ])
+
+            if not context.strip():
+                context = "No relevant context was retrieved from the knowledge base."
             
-            # Generate response
-            messages = self.prompt_template.format_messages(
-                context=context,
-                question=question
-            )
-            
-            response = self.llm.invoke(messages)
-            return response.content
+            if self.llm:
+                messages = self.prompt_template.format_messages(
+                    context=context,
+                    question=question
+                )
+                response = self.llm.invoke(messages)
+                return response.content
+
+            return self.local_llm.generate_answer(question, context_docs)
             
         except Exception as e:
             logger.error(f"Failed to generate answer: {e}")
@@ -211,7 +236,8 @@ Answer:"""
                 'answer': answer,
                 'sources': sources,
                 'context_count': len(context_docs),
-                'question': question
+                'question': question,
+                'backend': self.backend
             }
             
         except Exception as e:
@@ -220,7 +246,8 @@ Answer:"""
                 'answer': f"Error processing question: {str(e)}",
                 'sources': [],
                 'context_count': 0,
-                'question': question
+                'question': question,
+                'backend': self.backend
             }
     
     def get_knowledge_base_stats(self) -> Dict[str, Any]:
@@ -230,7 +257,10 @@ Answer:"""
         Returns:
             Dictionary containing knowledge base statistics
         """
-        return self.vector_store.get_stats()
+        stats = self.vector_store.get_stats()
+        stats['backend'] = self.backend
+        stats['llm_model'] = self.config.LLM_MODEL if self.llm else self.config.LOCAL_LLM_MODEL
+        return stats
     
     def update_knowledge_base(self) -> bool:
         """

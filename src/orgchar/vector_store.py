@@ -6,11 +6,41 @@ import logging
 import pickle
 from pathlib import Path
 from typing import List, Tuple, Optional
-from langchain_community.embeddings import SentenceTransformerEmbeddings
+from sentence_transformers import SentenceTransformer
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
+from langchain_core.embeddings import Embeddings
 
 logger = logging.getLogger(__name__)
+
+
+class SentenceTransformerEmbeddingsAdapter(Embeddings):
+    """LangChain Embeddings adapter backed by sentence-transformers."""
+
+    def __init__(self, model_name: str):
+        self.model_name = model_name
+        self.model = SentenceTransformer(model_name)
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        if not texts:
+            return []
+
+        vectors = self.model.encode(
+            texts,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+            show_progress_bar=False,
+        )
+        return vectors.tolist()
+
+    def embed_query(self, text: str) -> List[float]:
+        vector = self.model.encode(
+            text,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+            show_progress_bar=False,
+        )
+        return vector.tolist()
 
 class VectorStore:
     """Manages document embeddings and similarity search using FAISS."""
@@ -23,8 +53,22 @@ class VectorStore:
             embedding_model: Name of the sentence transformer model to use
         """
         self.embedding_model = embedding_model
-        self.embeddings = SentenceTransformerEmbeddings(model_name=embedding_model)
+        self.embeddings = SentenceTransformerEmbeddingsAdapter(model_name=embedding_model)
         self.vector_store: Optional[FAISS] = None
+
+    def _document_count(self) -> int:
+        """Return indexed document count without relying on private internals."""
+        if self.vector_store is None:
+            return 0
+
+        try:
+            return int(self.vector_store.index.ntotal)
+        except Exception:
+            docstore = getattr(self.vector_store, "docstore", None)
+            backing_dict = getattr(docstore, "_dict", None)
+            if isinstance(backing_dict, dict):
+                return len(backing_dict)
+            return 0
         
     def create_index(self, documents: List[Document]) -> None:
         """
@@ -131,7 +175,7 @@ class VectorStore:
             return
         
         try:
-            file_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.mkdir(parents=True, exist_ok=True)
             
             # Save FAISS index
             faiss_path = file_path / "faiss_index"
@@ -141,7 +185,7 @@ class VectorStore:
             metadata_path = file_path / "metadata.pkl"
             metadata = {
                 'embedding_model': self.embedding_model,
-                'document_count': len(self.vector_store.docstore._dict)
+                'document_count': self._document_count()
             }
             with open(metadata_path, 'wb') as f:
                 pickle.dump(metadata, f)
@@ -164,17 +208,20 @@ class VectorStore:
         faiss_path = file_path / "faiss_index"
         metadata_path = file_path / "metadata.pkl"
         
-        if not faiss_path.exists() or not metadata_path.exists():
+        if not faiss_path.exists():
             logger.warning(f"Vector store files not found at {file_path}")
             return False
         
         try:
-            # Load metadata
-            with open(metadata_path, 'rb') as f:
-                metadata = pickle.load(f)
+            metadata = {}
+            if metadata_path.exists():
+                with open(metadata_path, 'rb') as f:
+                    metadata = pickle.load(f)
+            else:
+                logger.warning("Metadata file missing, proceeding with FAISS-only load")
             
             # Verify embedding model compatibility
-            if metadata.get('embedding_model') != self.embedding_model:
+            if metadata.get('embedding_model') and metadata.get('embedding_model') != self.embedding_model:
                 logger.warning(f"Embedding model mismatch: expected {self.embedding_model}, "
                              f"found {metadata.get('embedding_model')}")
             
@@ -185,7 +232,8 @@ class VectorStore:
                 allow_dangerous_deserialization=True
             )
             
-            logger.info(f"Vector store loaded from {file_path} with {metadata.get('document_count', 0)} documents")
+            loaded_count = metadata.get('document_count', self._document_count())
+            logger.info(f"Vector store loaded from {file_path} with {loaded_count} documents")
             return True
         except Exception as e:
             logger.error(f"Failed to load vector store: {e}")
@@ -218,6 +266,6 @@ class VectorStore:
         
         return {
             'status': 'initialized',
-            'document_count': len(self.vector_store.docstore._dict),
+            'document_count': self._document_count(),
             'embedding_model': self.embedding_model
         }
