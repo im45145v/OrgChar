@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import List, Tuple, Optional
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 logger = logging.getLogger(__name__)
 

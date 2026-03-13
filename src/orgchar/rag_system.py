@@ -5,9 +5,8 @@ RAG (Retrieval-Augmented Generation) system for organizational behavior Q&A.
 import logging
 from typing import List, Optional, Dict, Any
 from langchain_openai import ChatOpenAI
-# LangChain core prompt & schema classes moved to langchain_core
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.schema import Document
+from langchain_core.documents import Document
 from .vector_store import VectorStore
 from .config import Config
 
@@ -172,7 +171,7 @@ Answer:"""
                 question=question
             )
             
-            response = self.llm(messages)
+            response = self.llm.invoke(messages)
             return response.content
             
         except Exception as e:
